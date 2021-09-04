@@ -15,6 +15,10 @@ export function updateAuthorSuccess(author) {
   return { type: types.UPDATE_AUTHOR_SUCCESS, author: author };
 }
 
+export function deleteAuthorOptimistic(author) {
+  return { type: types.DELETE_AUTHOR_OPTIMISTIC, author: author };
+}
+
 export function loadAuthors() {
   return function (dispatch) {
     dispatch(beginApiCall());
@@ -44,5 +48,14 @@ export function saveAuthor(author) {
         dispatch(apiCallError(error));
         throw error;
       });
+  };
+}
+
+export function deleteAuthor(author) {
+  return function (dispatch) {
+    // Doing optimistic delete, so not dispatching begin/end api call
+    // actions, or apiCallError action since we're not showing the loading status for this.
+    dispatch(deleteAuthorOptimistic(author));
+    return authorApi.deleteAuthor(author.id);
   };
 }

@@ -15,8 +15,8 @@ export function saveAuthor(author) {
     .catch(handleError);
 }
 
-// export function deleteCourse(courseId) {
-//   return fetch(baseUrl + courseId, { method: "DELETE" })
-//     .then(handleResponse)
-//     .catch(handleError);
-// }
+export function deleteAuthor(authorId) {
+  return fetch(baseUrl + authorId, { method: "DELETE" })
+    .then(handleResponse)
+    .catch(handleError);
+}

@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AuthorList from "./AuthorList";
-import { loadAuthors } from "../../redux/actions/authorActions";
+import { loadAuthors, deleteAuthor } from "../../redux/actions/authorActions";
 import Spinner from "../common/Spinner";
+import { toast } from "react-toastify";
 
 function AuthorsPage(props) {
   const authors = useSelector((state) => state.authors);
@@ -22,6 +23,34 @@ function AuthorsPage(props) {
       loadAuthorsHandle();
     }
   }, []);
+
+  async function handleDeleteAuthor(author) {
+    toast.success("Author Deleted");
+
+    try {
+      
+      dispatch(deleteAuthor(author)).catch((error) => {
+        toast.error("Deleteing authors failed " + error);
+        loadAuthorsHandle();
+      });
+      // await this.props.actions.deleteCourse(author);
+      
+    } catch (error) {
+      toast.error(`Author Delete Failed :: ${error}`);
+    }
+
+
+
+
+
+
+
+    //delete author
+
+    //show toastr success/failed
+
+    //update UI
+  }
 
   return (
     <div>
@@ -47,7 +76,7 @@ function AuthorsPage(props) {
             Refresh
           </button>
 
-          <AuthorList onDeleteClick={() => null} authors={authors} />
+          <AuthorList onDeleteClick={handleDeleteAuthor} authors={authors} />
         </>
       )}
     </div>
