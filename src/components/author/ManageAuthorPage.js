@@ -37,8 +37,8 @@ function ManageAuthorPage(props) {
       console.log("you are in");
       loadAuthorsHandle();
     } else {
-      const author =
-        slug && authors.length > 0 ? getAuthorBySlug(authors, slug) : newAuthor;
+      const author = getAuthorBySlug(authors, slug);
+        // slug && authors.length > 0 ? getAuthorBySlug(authors, slug) : newAuthor;
       // console.log("new author is : ", author || "no authors found");
 
       if (!author) return;
@@ -48,8 +48,8 @@ function ManageAuthorPage(props) {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    setAuthor((prevCourse) => ({
-      ...prevCourse,
+    setAuthor((prevAuthor) => ({
+      ...prevAuthor,
       [name]: value,
     }));
   }
