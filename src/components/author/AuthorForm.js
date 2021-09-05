@@ -22,7 +22,7 @@ const AuthorForm = ({
         label="Author Name"
         value={author.name}
         onChange={onChange}
-        error={errors.name}
+        error={errors.title}
       />
       <br />
       <button type="submit" disabled={saving} className="btn btn-primary">
