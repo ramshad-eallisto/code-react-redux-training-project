@@ -12,24 +12,35 @@ import { toast } from "react-toastify";
 class CoursesPage extends React.Component {
   state = {
     redirectToAddCoursePage: false,
+    filtered_courses: [],
   };
 
-  componentDidMount() {
+  loadCoursePageContent = (forcefully = false) => {
     const { courses, authors, actions } = this.props;
 
     // console.log("props are ", this.props.courses);
 
-    if (courses.length === 0) {
-      actions.loadCourses().catch((error) => {
-        alert("Loading courses failed " + error);
-      });
+    if (courses.length === 0 || forcefully) {
+      actions
+        .loadCourses()
+        .then(() => {
+          console.log("courses : ", this.props.courses);
+          this.setState({ filtered_courses: this.props.courses });
+        })
+        .catch((error) => {
+          alert("Loading courses failed " + error);
+        });
     }
 
-    if (authors.length === 0) {
+    if (authors.length === 0 || forcefully) {
       actions.loadAuthors().catch((error) => {
         alert("Loading authors failed " + error);
       });
     }
+  }
+
+  componentDidMount() {
+    this.loadCoursePageContent();
   }
 
   handleDeleteCourse = async (course) => {
@@ -55,6 +66,41 @@ class CoursesPage extends React.Component {
     }
   };
 
+  handleSearchInput = (event) => {
+    const { courses } = this.props;
+
+    console.log("courses : ", courses);
+    console.log("search : ", event.target.value);
+    var filtered_courses = courses.filter(
+      (course) =>
+        course.title.toLowerCase().includes(event.target.value.toLowerCase()) ||
+        course.authorName
+          .toLowerCase()
+          .includes(event.target.value.toLowerCase()) ||
+        course.category.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+
+    this.setState({ filtered_courses: filtered_courses });
+    console.log("filtered courses : ", filtered_courses);
+    //
+  };
+
+  handleAuthorFilterSelect = (event) => {
+    const { courses } = this.props;
+
+    console.log("author filter selected : ", event.target.value);
+    if (event.target.value === "all")
+      return this.setState({ filtered_courses: this.props.courses });
+
+    var filtered_courses = courses.filter((course) =>
+      course.authorName.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+
+    this.setState({ filtered_courses: filtered_courses });
+    console.log("filtered courses : ", filtered_courses);
+    //
+  };
+
   render() {
     return (
       <>
@@ -72,9 +118,40 @@ class CoursesPage extends React.Component {
               Add Course
             </button>
 
+            <button
+              style={{ marginBottom: 20, float: "right", marginLeft: 20 }}
+              className="btn btn-secondary refresh page"
+              onClick={() => this.loadCoursePageContent(true)}
+            >
+              Refresh
+            </button>
+
+            <select
+              style={{ marginBottom: 20, float: "right", width: "fit-content" }}
+              className="form-control add-course"
+              onChange={this.handleAuthorFilterSelect}
+            >
+              <option value="all">All</option>
+              {this.props.authors.map((author) => {
+                return (
+                  <option key={author.id} value={author.name}>
+                    {author.name}
+                  </option>
+                );
+              })}
+            </select>
+
+            {/* search bar */}
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search"
+              onChange={this.handleSearchInput}
+            />
+
             <CourseList
               onDeleteClick={this.handleDeleteCourse}
-              courses={this.props.courses}
+              courses={this.state.filtered_courses}
             />
           </>
         )}
