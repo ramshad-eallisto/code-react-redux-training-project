@@ -1,4 +1,4 @@
 node_modules
 package-lock.json
 react-redux.code-workspace
-tools/db.json
+.vscode/launch.json

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AuthorList from "./AuthorList";
 import { loadAuthors, deleteAuthor } from "../../redux/actions/authorActions";
@@ -6,13 +6,17 @@ import Spinner from "../common/Spinner";
 import { toast } from "react-toastify";
 
 function AuthorsPage(props) {
+  const [filteredAuthor, setfilteredAuthor] = useState([]);
+
   const authors = useSelector((state) => state.authors);
   const loading = useSelector((state) => state.apiCallsInProgress > 0);
 
   const dispatch = useDispatch();
 
   function loadAuthorsHandle() {
-    dispatch(loadAuthors()).catch((error) => {
+    dispatch(loadAuthors()).then(() => {
+      setfilteredAuthor(authors);
+    }).catch((error) => {
       alert("Loading authors failed " + error);
     });
   }
@@ -20,9 +24,14 @@ function AuthorsPage(props) {
   useEffect(() => {
     console.log("loaded authors are", authors);
     if (authors.length === 0) {
+      console.log("keri", authors);
+
       loadAuthorsHandle();
     }
-  }, []);
+    else{
+      setfilteredAuthor(authors);
+    }
+  }, [authors.length]);
 
   async function handleDeleteAuthor(author) {
     toast.success("Author Deleted");
@@ -39,17 +48,23 @@ function AuthorsPage(props) {
       toast.error(`Author Delete Failed :: ${error}`);
     }
 
-
-
-
-
-
-
     //delete author
 
     //show toastr success/failed
 
     //update UI
+  }
+
+  function handleSearchInput(event) {
+    // on change power
+
+    console.log("authors : ",authors);
+    console.log("search : ",event.target.value);
+    var filtered_authors = authors.filter(author => author.name.toLowerCase().includes((event.target.value).toLowerCase()));
+
+    setfilteredAuthor(filtered_authors);
+    console.log("filtered authors : ",filtered_authors);
+    // 
   }
 
   return (
@@ -76,7 +91,10 @@ function AuthorsPage(props) {
             Refresh
           </button>
 
-          <AuthorList onDeleteClick={handleDeleteAuthor} authors={authors} />
+          {/* search bar */}
+          <input type="text" className="form-control" placeholder="Search" onChange={handleSearchInput} />
+
+          <AuthorList onDeleteClick={handleDeleteAuthor} authors={filteredAuthor} />
         </>
       )}
     </div>
