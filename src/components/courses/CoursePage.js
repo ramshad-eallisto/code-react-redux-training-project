@@ -104,55 +104,84 @@ class CoursesPage extends React.Component {
   render() {
     return (
       <>
-        {this.state.redirectToAddCoursePage && <Redirect to="/course" />}
-        <h2>Courses</h2>
-        {this.props.loading ? (
-          <Spinner />
+        {(this.props.courses.length === 0) ? (
+          
+          <div className="">
+
+            <div className="carousel-caption">
+              <img src="src\2002.i515.001_modern_students_flat_icons-13.jpg" className="h-50 w-50" alt=""/><br/>
+              <button
+                style={{ marginBottom: 20 }}
+                className="btn btn-primary add-course"
+                onClick={() => this.setState({ redirectToAddCoursePage: true })}
+              >
+                Add Course
+              </button>
+
+              <button
+                style={{ marginBottom: 20, marginLeft: 20 }}
+                className="btn btn-secondary refresh page"
+                onClick={() => this.loadCoursePageContent(true)}
+              >
+                Refresh
+              </button>
+            </div>
+
+          </div>
+          
         ) : (
           <>
-            <button
-              style={{ marginBottom: 20 }}
-              className="btn btn-primary add-course"
-              onClick={() => this.setState({ redirectToAddCoursePage: true })}
-            >
-              Add Course
-            </button>
-
-            <button
-              style={{ marginBottom: 20, float: "right", marginLeft: 20 }}
-              className="btn btn-secondary refresh page"
-              onClick={() => this.loadCoursePageContent(true)}
-            >
-              Refresh
-            </button>
-
-            <select
-              style={{ marginBottom: 20, float: "right", width: "fit-content" }}
-              className="form-control add-course"
-              onChange={this.handleAuthorFilterSelect}
-            >
-              <option value="all">All</option>
-              {this.props.authors.map((author) => {
-                return (
-                  <option key={author.id} value={author.name}>
-                    {author.name}
-                  </option>
-                );
-              })}
-            </select>
-
-            {/* search bar */}
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search"
-              onChange={this.handleSearchInput}
-            />
-
             <CourseList
               onDeleteClick={this.handleDeleteCourse}
               courses={this.state.filtered_courses}
             />
+            {this.state.redirectToAddCoursePage && <Redirect to="/course" />}
+            <h2>Courses - {this.props.courses.length}</h2>
+            {this.props.loading ? (
+              <Spinner />
+            ) : (
+              <>
+                <button
+                  style={{ marginBottom: 20 }}
+                  className="btn btn-primary add-course"
+                  onClick={() => this.setState({ redirectToAddCoursePage: true })}
+                >
+                  Add Course
+                </button>
+
+                <button
+                  style={{ marginBottom: 20, float: "right", marginLeft: 20 }}
+                  className="btn btn-secondary refresh page"
+                  onClick={() => this.loadCoursePageContent(true)}
+                >
+                  Refresh
+                </button>
+
+                <select
+                  style={{ marginBottom: 20, float: "right", width: "fit-content" , marginLeft: 20 }}
+                  className="form-control add-course"
+                  onChange={this.handleAuthorFilterSelect}
+                >
+                  <option value="all">All</option>
+                  {this.props.authors.map((author) => {
+                    return (
+                      <option key={author.id} value={author.name}>
+                        {author.name}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* search bar */}
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search"
+                  onChange={this.handleSearchInput}
+                />
+
+              </>
+            )}
           </>
         )}
       </>
