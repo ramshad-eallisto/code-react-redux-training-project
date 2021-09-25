@@ -12,6 +12,8 @@ import { toast } from "react-toastify";
 class CoursesPage extends React.Component {
   state = {
     redirectToAddCoursePage: false,
+    rowCount: -1,
+    pagination: 1,
     filtered_courses: [],
   };
 
@@ -101,6 +103,84 @@ class CoursesPage extends React.Component {
     //
   };
 
+  handleRowCountSelect = (event) => {
+    this.setState({ rowCount: event.target.value });
+    console.log("row count : ", event.target.value);
+    //
+  };
+
+  InsideADiv = (props) => {
+    console.log("props : ", props);
+    const count = props.rows;
+    const onset = parseInt((props.page - 1) * count);
+    const offset = parseInt((props.page) * count);
+    console.log("count : ", 0,"onset : ", onset,"offset : ", offset);
+    var filtered_courses = props.children.props.courses;
+    if (count > 0) {
+      filtered_courses = props.children.props.courses.filter(function(item) {
+        if (this.count >= this.onset && this.count < this.offset) {
+          this.count++;
+          return true;
+        }
+        this.count++;
+        return false;
+      }, {count: 0, onset: onset, offset: offset});
+    }
+    console.log("filtered_courses : ", filtered_courses);
+    
+    return (<div id="2525" >
+      <CourseList
+        onDeleteClick={props.children.props.onDeleteClick}
+        courses={filtered_courses}
+      />
+    </div>);
+  };
+
+  handlePageButton = (page) => {
+    console.log("page : ", page);
+    this.setState({ pagination: page });
+    //
+  };
+
+  pginationDiv = (props) => {
+    console.log("props : ", props);
+
+    const course_count = props.courses.length;
+    const row_count = props.rows;
+    var page_count = parseInt(course_count / row_count);
+    if (parseInt(course_count % row_count) > 0) {
+      page_count++;
+    }
+
+    if (row_count > 0) {
+      var rows = [];
+      for (let index = 1; index <= page_count; index++) {
+        rows.push(<button
+          key={index}
+          style={{ marginBottom: 20, marginLeft: 20 }}
+          className="btn"
+          onClick={() => this.handlePageButton(index)}
+        >
+          {index}
+        </button>);
+      }
+
+      console.log('course_count: ',course_count);
+      console.log('row_count: ',row_count);
+      console.log('page_count: ',page_count);
+      console.log('rows: ',rows);
+      
+      return (<div id="252535" style={{ float: "right"}} >
+        {rows.map((row) => {
+          return (row)
+        })}
+      </div>);
+    }
+
+    return ('');
+    
+  };
+
   render() {
     return (
       <>
@@ -131,10 +211,6 @@ class CoursesPage extends React.Component {
           
         ) : (
           <>
-            <CourseList
-              onDeleteClick={this.handleDeleteCourse}
-              courses={this.state.filtered_courses}
-            />
             {this.state.redirectToAddCoursePage && <Redirect to="/course" />}
             <h2>Courses - {this.props.courses.length}</h2>
             {this.props.loading ? (
@@ -172,6 +248,16 @@ class CoursesPage extends React.Component {
                   })}
                 </select>
 
+                <select
+                  style={{ marginBottom: 20, float: "right", width: "fit-content" , marginLeft: 20 }}
+                  className="form-control add-course"
+                  onChange={this.handleRowCountSelect}
+                >
+                  <option value="-1">All Items</option>
+                  <option value="5">5 Rows</option>
+                  <option value="10">10 Rows</option>
+                </select>
+
                 {/* search bar */}
                 <input
                   type="text"
@@ -180,6 +266,13 @@ class CoursesPage extends React.Component {
                   onChange={this.handleSearchInput}
                 />
 
+                <this.InsideADiv page={this.state.pagination} rows={this.state.rowCount}>
+                  <CourseList
+                    onDeleteClick={this.handleDeleteCourse}
+                    courses={this.state.filtered_courses}
+                  />
+                </this.InsideADiv>
+                <this.pginationDiv courses={this.state.filtered_courses} rows={this.state.rowCount}/>
               </>
             )}
           </>
