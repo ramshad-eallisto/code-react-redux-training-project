@@ -99,6 +99,7 @@ class CoursesPage extends React.Component {
     );
 
     this.setState({ filtered_courses: filtered_courses });
+    this.setState({ pagination: 1 });
     console.log("filtered courses : ", filtered_courses);
     //
   };
